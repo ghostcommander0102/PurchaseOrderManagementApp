@@ -2,8 +2,10 @@ const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
 const csvParser = require('csv-parser');
-const db = require('./config/db');
+const express = require('express');
 const app = express();
+const routes = require('./routes');
+
 const upload = multer();
 
 // DB connect
@@ -11,6 +13,10 @@ db.connect();
 
 // Enable Cross-Origin Resource Sharing (CORS)
 app.use(cors());
+
+// Register the routes
+app.use('/api', routes);
+
 
 // Endpoint for processing the purchase order
 app.post('/api/purchase-order', upload.single('file'), (req, res) => {
