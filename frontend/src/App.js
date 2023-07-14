@@ -13,6 +13,12 @@ function App() {
 	const handleSubmit = (event) => {
 		event.preventDefault();
 
+		// Validate form fields
+		if (!date || !vendorName || !file) {
+			setErrorMessage('Please fill in all the required fields');
+			return;
+		}
+
 		const formData = new FormData();
 		formData.append('file', file);
 		formData.append('date', date);
@@ -48,13 +54,13 @@ function App() {
 			{errorMessage && <p className="error">{errorMessage}</p>}
 			<form onSubmit={handleSubmit}>
 				<label>Date:</label>
-				<input type="text" value={date} onChange={(e) => setDate(e.target.value)} />
+				<input type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
 				<br />
 				<label>Vendor Name:</label>
-				<input type="text" value={vendorName} onChange={(e) => setVendorName(e.target.value)} />
+				<input type="text" value={vendorName} onChange={(e) => setVendorName(e.target.value)} required />
 				<br />
 				<label>CSV File:</label>
-				<input type="file" onChange={handleFileChange} />
+				<input type="file" onChange={handleFileChange} required />
 				<br />
 				<button type="submit">Submit</button>
 			</form>
