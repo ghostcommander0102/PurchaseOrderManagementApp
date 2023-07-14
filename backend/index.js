@@ -2,9 +2,12 @@ const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
 const csvParser = require('csv-parser');
-
+const db = require('./config/db');
 const app = express();
 const upload = multer();
+
+// DB connect
+db.connect();
 
 // Enable Cross-Origin Resource Sharing (CORS)
 app.use(cors());
