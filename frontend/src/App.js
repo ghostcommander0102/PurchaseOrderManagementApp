@@ -6,6 +6,7 @@ function App() {
 	const [date, setDate] = useState('');
 	const [vendorName, setVendorName] = useState('');
 	const [errorMessage, setErrorMessage] = useState('');
+	const [successMessage, setSuccessMessage] = useState('');
 
 	const handleFileChange = (event) => {
 		setFile(event.target.files[0]);
@@ -34,6 +35,7 @@ function App() {
 				if (data.success) {
 					// Purchase order submitted successfully
 					setErrorMessage('');
+					setSuccessMessage('Purchase order submitted successfully');
 					// Reset form fields
 					setFile(null);
 					setDate('');
@@ -41,6 +43,7 @@ function App() {
 				} else {
 					// Handle validation errors
 					setErrorMessage(data.error);
+					setSuccessMessage('');
 				}
 			})
 			.catch((error) => {
@@ -53,6 +56,7 @@ function App() {
 		<div className="App">
 			<h1>Purchase Order Form</h1>
 			{errorMessage && <p className="error">{errorMessage}</p>}
+			{successMessage && <p className="success">{successMessage}</p>}
 			<form onSubmit={handleSubmit}>
 				<label htmlFor="dateInput">Date:</label>
 				<input type="date" id="dateInput" data-testid="dateInput" value={date} onChange={(e) => setDate(e.target.value)} required />

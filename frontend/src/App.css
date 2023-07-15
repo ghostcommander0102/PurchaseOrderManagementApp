@@ -45,3 +45,9 @@ button[type="submit"] {
     color: red;
     margin-bottom: 10px;
 }
+
+.success {
+    color: green;
+    font-weight: bold;
+    margin-top: 10px;
+}

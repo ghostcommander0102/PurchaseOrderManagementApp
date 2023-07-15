@@ -30,7 +30,7 @@ exports.uploadPurchaseOrder = async (req, res) => {
                 // Remove the uploaded file
                 fs.unlinkSync(req.file.path);
 
-                return res.status(200).json({ message: 'Purchase orders saved successfully' });
+                return res.status(200).json({ message: 'Purchase orders saved successfully', success: true });
             });
     } catch (error) {
         console.error('Error:', error);
