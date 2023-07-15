@@ -6,7 +6,7 @@ const purchaseOrderController = require('../controllers/purchaseOrderController'
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         // Specify the destination directory for uploaded files
-        cb(null, './backend/uploads/');
+        cb(null, 'uploads/');
     },
     filename: function (req, file, cb) {
         // Generate a unique filename for the uploaded file
