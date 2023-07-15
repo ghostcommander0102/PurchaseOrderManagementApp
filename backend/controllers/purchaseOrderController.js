@@ -1,4 +1,5 @@
 const { PurchaseOrder } = require('../models');
+const csvParser = require('csv-parser');
 
 const purchaseOrderController = {
     create: async (req, res) => {
@@ -6,12 +7,32 @@ const purchaseOrderController = {
             const { date, vendorName } = req.body;
             const purchaseOrderItems = [];
 
-            // Process the uploaded CSV file and populate purchaseOrderItems array
+            // Parse the uploaded CSV file
+            req.pipe(req.busboy);
+            req.busboy.on('file', (fieldname, file, filename) => {
+                file.pipe(csvParser())
+                    .on('data', (data) => {
+                        // Process each row of the CSV file
+                        const { modelNumber, unitPrice, quantity } = data;
 
-            // Insert the purchase order items into the database
-            await PurchaseOrder.bulkCreate(purchaseOrderItems);
+                        // Create a purchase order item
+                        const purchaseOrderItem = {
+                            modelNumber,
+                            unitPrice: parseFloat(unitPrice),
+                            quantity: parseInt(quantity),
+                            date: new Date(date),
+                            vendorName,
+                        };
 
-            res.json({ success: true });
+                        purchaseOrderItems.push(purchaseOrderItem);
+                    })
+                    .on('end', async () => {
+                        // Insert the purchase order items into the database
+                        await PurchaseOrder.bulkCreate(purchaseOrderItems);
+
+                        res.json({ success: true });
+                    });
+            });
         } catch (error) {
             console.error('Error saving purchase order:', error);
             res.status(500).json({ success: false, error: 'Failed to save purchase order' });
