@@ -53,14 +53,14 @@ function App() {
 			<h1>Purchase Order Form</h1>
 			{errorMessage && <p className="error">{errorMessage}</p>}
 			<form onSubmit={handleSubmit}>
-				<label>Date:</label>
-				<input type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
+				<label htmlFor="dateInput">Date:</label>
+				<input type="date" id="dateInput" data-testid="dateInput" value={date} onChange={(e) => setDate(e.target.value)} required />
 				<br />
-				<label>Vendor Name:</label>
-				<input type="text" value={vendorName} onChange={(e) => setVendorName(e.target.value)} required />
+				<label htmlFor="nameInput">Vendor Name:</label>
+				<input type="text" id="nameInput" data-testid="nameInput" value={vendorName} onChange={(e) => setVendorName(e.target.value)} required />
 				<br />
-				<label>CSV File:</label>
-				<input type="file" onChange={handleFileChange} required />
+				<label htmlFor="fileInput">CSV File:</label>
+				<input type="file" id="fileInput" data-testid="fileInput" onChange={handleFileChange} required />
 				<br />
 				<button type="submit">Submit</button>
 			</form>

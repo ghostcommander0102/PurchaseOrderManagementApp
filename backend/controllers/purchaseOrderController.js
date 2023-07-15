@@ -1,43 +1,39 @@
-const { PurchaseOrder } = require('../models');
-const csvParser = require('csv-parser');
+const  {PurchaseOrder}  = require('../models/purchaseOrder');
+const csv = require('csv-parser');
+const fs = require('fs');
 
-const purchaseOrderController = {
-    create: async (req, res) => {
-        try {
-            const { date, vendorName } = req.body;
-            const purchaseOrderItems = [];
-
-            // Parse the uploaded CSV file
-            req.pipe(req.busboy);
-            req.busboy.on('file', (fieldname, file, filename) => {
-                file.pipe(csvParser())
-                    .on('data', (data) => {
-                        // Process each row of the CSV file
-                        const { modelNumber, unitPrice, quantity } = data;
-
-                        // Create a purchase order item
-                        const purchaseOrderItem = {
-                            modelNumber,
-                            unitPrice: parseFloat(unitPrice),
-                            quantity: parseInt(quantity),
-                            date: new Date(date),
-                            vendorName,
-                        };
-
-                        purchaseOrderItems.push(purchaseOrderItem);
-                    })
-                    .on('end', async () => {
-                        // Insert the purchase order items into the database
-                        await PurchaseOrder.bulkCreate(purchaseOrderItems);
-
-                        res.json({ success: true });
-                    });
-            });
-        } catch (error) {
-            console.error('Error saving purchase order:', error);
-            res.status(500).json({ success: false, error: 'Failed to save purchase order' });
+exports.uploadPurchaseOrder = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded' });
         }
-    },
-};
 
-module.exports = purchaseOrderController;
+        const results = [];
+
+        fs.createReadStream(req.file.path)
+            .pipe(csv())
+            .on('data', (data) => results.push(data))
+            .on('end', async () => {
+                // Process the CSV data and save it to the database
+                for (const result of results) {
+                    const purchaseOrder = {
+                        modelNumber: result['Model Number'],
+                        unitPrice: parseFloat(result['Unit Price']),
+                        quantity: parseInt(result['Quantity']),
+                        date: req.body.date,
+                        vendorName: req.body.vendorName,
+                    };
+
+                    await PurchaseOrder.create(purchaseOrder);
+                }
+
+                // Remove the uploaded file
+                fs.unlinkSync(req.file.path);
+
+                return res.status(200).json({ message: 'Purchase orders saved successfully' });
+            });
+    } catch (error) {
+        console.error('Error:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
