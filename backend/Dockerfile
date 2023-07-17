@@ -13,6 +13,9 @@ RUN npm install
 # Copy the backend source code to the working directory
 COPY . .
 
+# Run the Sequelize migration command
+RUN npx sequelize-cli db:migrate
+
 # Expose a port on which the backend will listen
 EXPOSE 5000
 

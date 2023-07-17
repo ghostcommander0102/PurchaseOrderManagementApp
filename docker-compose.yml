@@ -4,29 +4,28 @@ services:
     image: mysql:latest
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: 
+      MYSQL_ROOT_PASSWORD: ghost
       MYSQL_DATABASE: ecommerce_db
-      MYSQL_USER: root
       MYSQL_PASSWORD: 
-    ports:
-      - '3306:3306'
+    expose:
+      - 3306
     volumes:
       - ./data:/var/lib/mysql
 
-backend:
-  build:
-    context: ./backend
-    dockerfile: Dockerfile
-  ports:
-    - '3000:3000'
-  depends_on:
-    - db
-
-frontend:
-  build:
-    context: ./frontend
-    dockerfile: Dockerfile
-  ports:
-    - '80:80'
-  depends_on:
-    - backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - '5000:5000'
+    depends_on:
+      - db
+    command: sh -c "npx sequelize-cli db:migrate --migrations-path=/app/src/migrations && npm start"
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - '80:80'
+    depends_on:
+      - backend
